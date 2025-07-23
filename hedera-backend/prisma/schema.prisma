@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  name       String?
+  role       String   @default("user") // <- Ajout
+  accountId  String?
+}
+
+model Account {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique
+  password       String
+  email          String?  @unique
+  fullName       String?
+  privateKey     String
+  publicKey      String
+  accountId      String   @unique @default(uuid())
+  createdAt      DateTime @default(now())
+  initialBalance String?  // 
+}
+
+
+model TransactionRecord {
+  id            String   @id @default(uuid())
+  transactionId String   // Obligatoire ici
+  senderId      String
+  recipientId   String
+  amount        BigInt
+  txId          String
+  consensusTime String
+  timestamp     DateTime @default(now())
+}
+
+
+model LogTransaction {
+  id         Int      @id @default(autoincrement())
+  type       String   // hbar_transfer, token_create, message_send, etc.
+  status     String   // SUCCESS, FAILED
+  accountId  String   // Le compte utilisateur concerné
+  message    String?  // Message facultatif
+  createdAt  DateTime @default(now())
+}
